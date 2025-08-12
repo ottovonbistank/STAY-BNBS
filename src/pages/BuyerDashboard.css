@@ -1,0 +1,285 @@
+/* Reset margins & set dark background */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #121212;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden; /* prevent horizontal scroll */
+  box-sizing: border-box;
+}
+
+/* Dark background container */
+.buyer-container {
+  padding: 20px;
+  background-color: #121212;
+  min-height: 100vh;
+  color: white;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.buyer-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Dashboard layout */
+.dashboard-layout {
+  display: flex;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Listings grid */
+.listings-grid {
+  flex: 0 0 65%; /* about 65% width */
+  max-height: 85vh;
+  overflow-y: auto;
+  padding-right: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+/* Card styles */
+.listing-card {
+  background: #1f1f1f;
+  border-radius: 10px;
+  overflow: visible; /* allow description to show */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: auto; /* allow flexible height */
+}
+
+.listing-card:hover {
+  transform: translateY(-5px);
+}
+
+.listing-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.listing-info {
+  padding: 15px;
+  flex-grow: 1;
+  color: white;
+  height: auto;
+  overflow: visible;
+}
+
+.listing-info h3,
+.listing-info p,
+.listing-info span {
+  margin: 5px 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* Bookings section */
+.bookings-section {
+  flex: 0 0 35%; /* about 35% width */
+  background: #2b2b2b;
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Individual booking item */
+.booking-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  background: #1e1e1e;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.booking-item img {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.host-name {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #ccc;
+}
+
+/* Scrollbar styling */
+.listings-grid::-webkit-scrollbar,
+.bookings-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.listings-grid::-webkit-scrollbar-thumb,
+.bookings-section::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 3px;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+  z-index: 1000;
+  padding: 15px; /* padding to prevent tight edges */
+  box-sizing: border-box;
+}
+
+/* Modal content */
+.modal-content {
+  background: #222;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  position: relative;
+  max-width: 480px; /* fixed max-width */
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto; /* scroll if content too tall */
+  animation: zoomIn 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Responsive modal image */
+.modal-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* Description & features */
+.modal-description {
+  margin-top: 10px;
+  text-align: left;
+  width: 100%;
+  color: #ddd;
+}
+
+.features-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 5px;
+}
+
+.features-list li {
+  margin-bottom: 5px;
+}
+
+/* Booking controls */
+.booking-controls {
+  margin-top: 20px;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.booking-controls label {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #eee;
+}
+
+.booking-controls input {
+  margin-left: 10px;
+  width: 120px;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  background-color: #333;
+  color: white;
+}
+
+/* Buttons */
+button {
+  padding: 10px 20px;
+  margin-top: 15px;
+  cursor: pointer;
+  background: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background: #e68900;
+}
+
+/* Close button */
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  color: white;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+}
+
+/* Responsive: Stack vertically on small screens */
+@media (max-width: 900px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .listings-grid,
+  .bookings-section {
+    flex: 1 1 100%;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    max-height: 90vh;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); }
+  to { transform: scale(1); }
+}

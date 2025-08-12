@@ -1,0 +1,40 @@
+/* Fullscreen background image */
+.landing-container {
+  height: 100vh;
+  background: url("https://images.unsplash.com/photo-1505691938895-1758d7feb511") center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay {
+  text-align: center;
+  background: rgba(0,0,0,0.5);
+  padding: 3rem;
+  border-radius: 12px;
+  color: white;
+}
+
+.overlay h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.overlay p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.login-btn {
+  padding: 0.8rem 1.5rem;
+  background: #ff7e5f;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+.login-btn:hover {
+  background: #feb47b;
+}
