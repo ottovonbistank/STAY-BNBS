@@ -1,69 +1,147 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./Dashboard.css";
 
-export default function BuyersDashboard() {
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+const BuyerDashboard = () => {
   const [listings, setListings] = useState([]);
-  const [nights, setNights] = useState({});
+  const [selectedListing, setSelectedListing] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/listings")
-      .then(res => res.json())
-      .then(data => setListings(data))
-      .catch(err => console.error(err));
+    fetchListings();
   }, []);
 
-  const handleBooking = (id) => {
-    fetch(`http://localhost:5000/api/book/${id}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nights: nights[id] || 1 })
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) alert(data.error);
-        else {
-          alert("Booking successful");
-          setListings(prev => prev.map(l => l._id === id ? { ...l, booked: true, bookingDetails: { nights: nights[id] || 1 } } : l));
-        }
-      }).catch(err => console.error(err));
+  const fetchListings = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/listings`);
+      setListings(res.data);
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+    }
+  };
+
+  const handleBookListing = async (id) => {
+    if (!window.confirm("Are you sure you want to book this listing?")) return;
+    try {
+      await axios.post(`${API_URL}/api/book/${id}`, { nights: 3 });
+      fetchListings();
+      closeModal();
+    } catch (error) {
+      console.error("Error booking listing:", error);
+    }
+  };
+
+  const handleUnbookListing = async (id) => {
+    if (!window.confirm("Are you sure you want to unbook this listing?")) return;
+    try {
+      await axios.post(`${API_URL}/api/unbook/${id}`);
+      fetchListings();
+    } catch (error) {
+      console.error("Error unbooking listing:", error);
+    }
+  };
+
+  const openModal = (listing) => {
+    setSelectedListing(listing);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setSelectedListing(null);
+    setShowModal(false);
   };
 
   return (
-    <div className="dashboard-container">
-      <h1>Available Listings</h1>
-      <div className="listings-grid">
-        {listings.map(l => (
-          <div className="listing-card" key={l._id}>
-            <img src={`http://localhost:5000${l.imageUrl}`} alt={l.title} />
-            <div className="card-body">
-              <h3>{l.title}</h3>
-              <p>{l.location}</p>
-              <p>{l.price}</p>
-              <p>{l.description}</p>
-              {!l.booked ? (
-                <div className="booking-section">
-                  <input type="number" min="1" value={nights[l._id] || ""} onChange={(e) => setNights({ ...nights, [l._id]: e.target.value })} />
-                  <button onClick={() => handleBooking(l._id)}>Book Now</button>
-                </div>
-              ) : <span className="booked-label">Booked</span>}
-            </div>
+    <div className="dashboard">
+      <h2>Buyer Dashboard</h2>
+
+      <div className="all-listings">
+        <h3>All Listings</h3>
+        {listings.length === 0 ? (
+          <p>No listings at the moment.</p>
+        ) : (
+          <div className="listings">
+            {listings.map((listing) => (
+              <div
+                className="listing-card"
+                key={listing._id}
+                onClick={() => openModal(listing)}
+              >
+                {listing.imageUrl && (
+                  <img src={`${API_URL}${listing.imageUrl}`} alt={listing.title} />
+                )}
+                <h3>{listing.title}</h3>
+                <p>{listing.location}</p>
+                <p>{listing.price}</p>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
-      <h2>My Bookings</h2>
-      {listings.filter(l => l.booked).map(l => (
-        <div className="listing-card" key={l._id}>
-          <img src={`http://localhost:5000${l.imageUrl}`} alt={l.title} />
-          <div className="card-body">
-            <h3>{l.title}</h3>
-            <p>{l.location}</p>
-            <p>{l.price}</p>
-            <p>{l.description}</p>
-            <p>Nights: {l.bookingDetails.nights}</p>
-            <span className="booked-label">Booked</span>
+
+      <hr />
+
+      <div className="booked-listings">
+        <h3>Booked Houses</h3>
+        {listings.filter((l) => l.booked).length === 0 ? (
+          <p>You have not booked any listings yet.</p>
+        ) : (
+          <div className="listings">
+            {listings
+              .filter((l) => l.booked)
+              .map((listing) => (
+                <div className="listing-card" key={listing._id}>
+                  {listing.imageUrl && (
+                    <img src={`${API_URL}${listing.imageUrl}`} alt={listing.title} />
+                  )}
+                  <h3>{listing.title}</h3>
+                  <p>{listing.location}</p>
+                  <p>{listing.price}</p>
+                  <p className="booked-status">Booked</p>
+                  <button onClick={() => handleUnbookListing(listing._id)}>
+                    Unbook
+                  </button>
+                </div>
+              ))}
+          </div>
+        )}
+      </div>
+
+      {/* MODAL */}
+      {showModal && selectedListing && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              className="modal-image"
+              src={`${API_URL}${selectedListing.imageUrl}`}
+              alt={selectedListing.title}
+            />
+            <h3>{selectedListing.title}</h3>
+            <p>{selectedListing.location}</p>
+            <p>{selectedListing.price}</p>
+            <div className="modal-description">
+              <p>{selectedListing.description}</p>
+            </div>
+
+            {!selectedListing.booked ? (
+              <button onClick={() => handleBookListing(selectedListing._id)}>
+                Book Now
+              </button>
+            ) : (
+              <button disabled>Booked</button>
+            )}
+
+            <button className="close-btn" onClick={closeModal}>×</button>
           </div>
         </div>
-      ))}
+      )}
     </div>
   );
-}
+};
+
+export default BuyerDashboard;

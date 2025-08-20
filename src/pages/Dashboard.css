@@ -1,141 +1,170 @@
-/* Dashboard.css */
-
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f6f8;
-  margin: 0;
-  padding: 0;
+.dashboard {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
 }
 
-.dashboard-container {
-  padding: 20px 40px;
-}
-
-h1, h2 {
+.dashboard h2 {
+  text-align: center;
+  margin-bottom: 20px;
   color: #333;
 }
 
-.listing-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 30px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+form {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
-.listing-form input,
-.listing-form textarea {
+form input,
+form textarea,
+form button {
+  width: 100%;
+  margin-bottom: 10px;
   padding: 10px;
   font-size: 14px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  outline: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
 }
 
-.listing-form input[type="file"] {
-  padding: 5px;
-}
-
-.listing-form button {
-  padding: 12px;
-  background-color: #4caf50;
+form button {
+  background: #007bff;
   color: white;
-  border: none;
-  border-radius: 8px;
   cursor: pointer;
+  border: none;
   font-weight: bold;
-  transition: 0.3s;
 }
 
-.listing-form button:hover {
-  background-color: #45a049;
+form button:hover {
+  background: #0056b3;
 }
 
-.listings-grid {
-  display: flex;
-  flex-wrap: wrap;
+.listings {
+  display: grid;
   gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
 .listing-card {
-  background: #fff;
-  border-radius: 12px;
+  background: white;
+  border-radius: 8px;
   overflow: hidden;
-  width: 250px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.listing-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .listing-card img {
   width: 100%;
-  height: 150px;
+  height: 200px;
   object-fit: cover;
 }
 
-.listing-card .card-body {
-  padding: 12px;
-}
-
 .listing-card h3 {
-  margin: 0 0 8px;
-  font-size: 18px;
+  margin: 10px;
   color: #333;
 }
 
 .listing-card p {
-  font-size: 14px;
-  margin: 4px 0;
+  margin: 0 10px 10px;
   color: #555;
 }
 
 .listing-card button {
-  margin-top: 10px;
+  margin: 10px;
   padding: 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.listing-card button:first-of-type {
+  background: #28a745;
+  color: white;
+}
+
+.listing-card button:first-of-type:hover {
+  background: #218838;
+}
+
+.listing-card button:last-of-type {
+  background: #dc3545;
+  color: white;
+}
+
+.listing-card button:last-of-type:hover {
+  background: #c82333;
+}
+.status-tag {
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.status-tag.booked {
+  background-color: #e74c3c;
+}
+
+.status-tag.available {
+  background-color: #2ecc71;
+}
+/* ----- Modal styles for BuyerDashboard ----- */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.modal-content {
+  background: #222;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 480px;
   width: 100%;
-  background-color: #f44336;
-  color: white;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.modal-description {
+  margin-top: 10px;
+  text-align: left;
+  color: #ddd;
+}
+
+.close-btn {
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.listing-card button:hover {
-  background-color: #d32f2f;
-}
-
-.booking-section input[type="number"] {
-  width: 60px;
-  padding: 6px;
-  margin-right: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.booking-section button {
-  padding: 8px 12px;
-  background-color: #2196f3;
+  font-size: 1.8rem;
   color: white;
-  border: none;
-  border-radius: 6px;
+  position: absolute;
+  top: 10px;
+  right: 15px;
   cursor: pointer;
-  font-weight: bold;
-}
-
-.booking-section button:hover {
-  background-color: #1976d2;
-}
-
-.booked-label {
-  color: red;
-  font-weight: bold;
 }
