@@ -1,9 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import multer from "multer";
-import path from "path";
 import dotenv from "dotenv";
+import axios from "axios";
+import bodyParser from "body-parser";
+import path from "path";
 import { fileURLToPath } from "url";
 import Listing from "./models/Listing.js";
 
@@ -11,56 +12,25 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
-app.use(express.json());
-
+// ✅ Fix __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// ✅ Middleware
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json());
+
+// ✅ Serve static uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads"),
-  filename: (req, file, cb) =>
-    cb(null, Date.now() + "-" + file.originalname.replace(/\s+/g, "_")),
-});
-const upload = multer({ storage });
-
+// ✅ MongoDB connect
 mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error(err));
 
-/**
- * POST /api/listings => Create a listing
- */
-app.post("/api/listings", upload.single("image"), async (req, res) => {
-  try {
-    const { title, location, price, description, contact } = req.body;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
-
-    const listing = new Listing({
-      title,
-      location,
-      price,
-      description,
-      contact,
-      image: req.file ? req.file.filename : "",
-      imageUrl,
-      booked: false,
-      bookingDetails: {},
-    });
-
-    await listing.save();
-    res.json({ message: "Listing created successfully", listing });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to create listing" });
-  }
-});
-
-/**
- * GET /api/listings => Get all listings
- */
+// ✅ Get all listings
 app.get("/api/listings", async (req, res) => {
   try {
     const listings = await Listing.find();
@@ -70,84 +40,106 @@ app.get("/api/listings", async (req, res) => {
   }
 });
 
-/**
- * POST /api/book/:id => Book a listing
- */
-app.post("/api/book/:id", async (req, res) => {
+// ✅ Get single listing
+app.get("/api/listings/:id", async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
-    if (!listing) return res.status(404).json({ error: "Listing not found" });
-
-    listing.booked = true;
-    listing.bookingDetails = req.body;
-    await listing.save();
-
-    res.json({ message: "Listing booked successfully", listing });
+    if (!listing) return res.status(404).json({ error: "Not found" });
+    res.json(listing);
   } catch (err) {
-    res.status(500).json({ error: "Failed to book listing" });
+    res.status(500).json({ error: "Failed to fetch listing" });
   }
 });
 
-/**
- * POST /api/unbook/:id => Unbook a listing
- */
-app.post("/api/unbook/:id", async (req, res) => {
-  try {
-    const listing = await Listing.findById(req.params.id);
-    if (!listing) return res.status(404).json({ error: "Listing not found" });
+// ✅ M-Pesa Token
+async function getAccessToken() {
+  const secret = Buffer.from(
+    `${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRET}`
+  ).toString("base64");
 
-    listing.booked = false;
-    listing.bookingDetails = {};
-    await listing.save();
-
-    res.json({ message: "Listing unbooked successfully", listing });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to unbook listing" });
-  }
-});
-
-/**
- * PUT /api/listings/:id => Update a listing
- */
-app.put("/api/listings/:id", upload.single("image"), async (req, res) => {
-  try {
-    const { title, location, price, description, contact } = req.body;
-
-    const updateData = {
-      title,
-      location,
-      price,
-      description,
-      contact,
-    };
-
-    if (req.file) {
-      updateData.image = req.file.filename;
-      updateData.imageUrl = `/uploads/${req.file.filename}`;
+  const { data } = await axios.get(
+    "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+    {
+      headers: {
+        Authorization: `Basic ${secret}`,
+      },
     }
+  );
 
-    const listing = await Listing.findByIdAndUpdate(
-      req.params.id,
-      { $set: updateData },
-      { new: true }
+  return data.access_token;
+}
+
+// ✅ STK Push
+app.post("/api/mpesa/stkpush", async (req, res) => {
+  try {
+    const { phone, amount, listingId } = req.body;
+    const token = await getAccessToken();
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-T:.Z]/g, "")
+      .slice(0, 14);
+
+    const password = Buffer.from(
+      `${process.env.MPESA_SHORTCODE}${process.env.MPESA_PASSKEY}${timestamp}`
+    ).toString("base64");
+
+    await axios.post(
+      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+      {
+        BusinessShortCode: process.env.MPESA_SHORTCODE,
+        Password: password,
+        Timestamp: timestamp,
+        TransactionType: "CustomerPayBillOnline",
+        Amount: amount,
+        PartyA: phone,
+        PartyB: process.env.MPESA_SHORTCODE,
+        PhoneNumber: phone,
+        CallBackURL: `${process.env.SERVER_URL}/api/mpesa/callback`,
+        AccountReference: listingId,
+        TransactionDesc: "Payment for booking",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
-    if (!listing) return res.status(404).json({ error: "Listing not found" });
-    res.json({ message: "Listing updated successfully", listing });
+    res.json({ success: true, message: "STK Push sent" });
   } catch (err) {
-    res.status(500).json({ error: "Failed to update listing" });
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: "STK push failed" });
   }
 });
 
-app.delete("/api/listings/:id", async (req, res) => {
-  try {
-    const listing = await Listing.findByIdAndDelete(req.params.id);
-    if (!listing) return res.status(404).json({ error: "Listing not found" });
+// ✅ M-Pesa Callback
+app.post("/api/mpesa/callback", async (req, res) => {
+  console.log("M-Pesa Callback:", req.body);
 
-    res.json({ message: "Listing deleted successfully" });
+  try {
+    const body = req.body.Body.stkCallback;
+
+    if (body.ResultCode === 0) {
+      const listingId = body.CallbackMetadata.Item.find(
+        (i) => i.Name === "AccountReference"
+      )?.Value;
+
+      if (listingId) {
+        await Listing.findByIdAndUpdate(listingId, { booked: true });
+        console.log("Booking marked as paid:", listingId);
+      }
+    }
   } catch (err) {
-    res.status(500).json({ error: "Failed to delete listing" });
+    console.error("Callback error:", err.message);
   }
+
+  res.json({ ok: true });
 });
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+mongoose.connection.once("open", () => {
+  console.log("✅ Connected to DB:", mongoose.connection.name);
+  console.log("✅ Collections:", Object.keys(mongoose.connection.collections));
+});

@@ -1,0 +1,78 @@
+/* PaymentPage.css */
+
+.payment-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  background: #f9fafb; /* light gray */
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-container {
+  background: #fff;
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.payment-container h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.payment-container p {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 25px;
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.payment-option-btn {
+  background: #2563eb; /* blue */
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.payment-option-btn:hover {
+  background: #1d4ed8; /* darker blue */
+}
+
+.payment-option-btn.mpesa {
+  background: #25d366; /* M-Pesa green */
+}
+
+.payment-option-btn.mpesa:hover {
+  background: #1ebe57;
+}
+
+.back-btn {
+  margin-top: 20px;
+  background: #e5e7eb;
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #d1d5db;
+}

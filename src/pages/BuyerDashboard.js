@@ -1,5 +1,7 @@
+// BuyerDashboard.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
@@ -8,6 +10,8 @@ const BuyerDashboard = () => {
   const [listings, setListings] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchListings();
@@ -43,6 +47,11 @@ const BuyerDashboard = () => {
     }
   };
 
+  // ✅ redirect to payment page
+  const handleProceedToPayment = (listing) => {
+    navigate(`/payment/${listing._id}`, { state: { listing } });
+  };
+
   const openModal = (listing) => {
     setSelectedListing(listing);
     setShowModal(true);
@@ -55,8 +64,6 @@ const BuyerDashboard = () => {
 
   return (
     <div className="dashboard">
-      <h2>Buyer Dashboard</h2>
-
       <div className="all-listings">
         <h3>All Listings</h3>
         {listings.length === 0 ? (
@@ -70,11 +77,14 @@ const BuyerDashboard = () => {
                 onClick={() => openModal(listing)}
               >
                 {listing.imageUrl && (
-                  <img src={`${API_URL}${listing.imageUrl}`} alt={listing.title} />
+                  <img
+                    src={`${API_URL}${listing.imageUrl}`}
+                    alt={listing.title}
+                  />
                 )}
                 <h3>{listing.title}</h3>
                 <p>{listing.location}</p>
-                <p>{listing.price}</p>
+                <p>{listing.price} KES</p>
               </div>
             ))}
           </div>
@@ -94,14 +104,26 @@ const BuyerDashboard = () => {
               .map((listing) => (
                 <div className="listing-card" key={listing._id}>
                   {listing.imageUrl && (
-                    <img src={`${API_URL}${listing.imageUrl}`} alt={listing.title} />
+                    <img
+                      src={`${API_URL}${listing.imageUrl}`}
+                      alt={listing.title}
+                    />
                   )}
                   <h3>{listing.title}</h3>
                   <p>{listing.location}</p>
-                  <p>{listing.price}</p>
+                  <p>{listing.price} KES</p>
                   <p className="booked-status">Booked</p>
+
                   <button onClick={() => handleUnbookListing(listing._id)}>
                     Unbook
+                  </button>
+
+                  {/* ✅ Goes to payment page */}
+                  <button
+                    className="payment-btn"
+                    onClick={() => handleProceedToPayment(listing)}
+                  >
+                    Proceed to Payment
                   </button>
                 </div>
               ))}
@@ -109,13 +131,10 @@ const BuyerDashboard = () => {
         )}
       </div>
 
-      {/* MODAL */}
+      {/* DETAILS MODAL */}
       {showModal && selectedListing && (
         <div className="modal-overlay" onClick={closeModal}>
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <img
               className="modal-image"
               src={`${API_URL}${selectedListing.imageUrl}`}
@@ -123,7 +142,7 @@ const BuyerDashboard = () => {
             />
             <h3>{selectedListing.title}</h3>
             <p>{selectedListing.location}</p>
-            <p>{selectedListing.price}</p>
+            <p>{selectedListing.price} KES</p>
             <div className="modal-description">
               <p>{selectedListing.description}</p>
             </div>
@@ -133,10 +152,20 @@ const BuyerDashboard = () => {
                 Book Now
               </button>
             ) : (
-              <button disabled>Booked</button>
+              <>
+                <button disabled>Booked</button>
+                <button
+                  className="payment-btn"
+                  onClick={() => handleProceedToPayment(selectedListing)}
+                >
+                  Proceed to Payment
+                </button>
+              </>
             )}
 
-            <button className="close-btn" onClick={closeModal}>×</button>
+            <button className="close-btn" onClick={closeModal}>
+              ×
+            </button>
           </div>
         </div>
       )}

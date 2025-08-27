@@ -42,14 +42,9 @@ const SellerDashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData();
-    form.append("title", formData.title);
-    form.append("location", formData.location);
-    form.append("price", formData.price);
-    form.append("description", formData.description);
-    form.append("contact", formData.contact);
-    if (formData.image) {
-      form.append("image", formData.image);
-    }
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value) form.append(key, value);
+    });
 
     try {
       await axios.post(`${API_URL}/api/listings`, form, {
@@ -101,14 +96,9 @@ const SellerDashboard = () => {
   const handleUpdate = async () => {
     if (!editingListing) return;
     const form = new FormData();
-    form.append("title", formData.title);
-    form.append("location", formData.location);
-    form.append("price", formData.price);
-    form.append("description", formData.description);
-    form.append("contact", formData.contact);
-    if (formData.image) {
-      form.append("image", formData.image);
-    }
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value) form.append(key, value);
+    });
 
     try {
       await axios.put(`${API_URL}/api/listings/${editingListing._id}`, form, {
@@ -122,9 +112,10 @@ const SellerDashboard = () => {
   };
 
   return (
-    <div className="dashboard">
+    <div className="page-container">
       <h2>Seller Dashboard</h2>
 
+      {/* Add Listing Form */}
       <form className="listing-form" onSubmit={handleSubmit}>
         <input type="text" name="title" placeholder="Title" value={formData.title} onChange={handleChange} />
         <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} />
@@ -135,6 +126,7 @@ const SellerDashboard = () => {
         <button type="submit">Add Listing</button>
       </form>
 
+      {/* Listings */}
       <div className="listings">
         {listings.map((listing) => (
           <div className="listing-card" key={listing._id}>
@@ -153,6 +145,7 @@ const SellerDashboard = () => {
         ))}
       </div>
 
+      {/* Edit Modal */}
       {showEditModal && (
         <div className="modal-overlay" onClick={closeEditModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
