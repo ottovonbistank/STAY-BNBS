@@ -84,7 +84,7 @@ const BuyerDashboard = () => {
                 )}
                 <h3>{listing.title}</h3>
                 <p>{listing.location}</p>
-                <p>{listing.price} KES</p>
+                <p>{listing.price} </p>
               </div>
             ))}
           </div>

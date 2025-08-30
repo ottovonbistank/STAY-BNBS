@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import axios from "axios";
 import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -51,90 +50,51 @@ app.get("/api/listings/:id", async (req, res) => {
   }
 });
 
-// ✅ M-Pesa Token
-async function getAccessToken() {
-  const secret = Buffer.from(
-    `${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRET}`
-  ).toString("base64");
-
-  const { data } = await axios.get(
-    "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
-    {
-      headers: {
-        Authorization: `Basic ${secret}`,
-      },
-    }
-  );
-
-  return data.access_token;
-}
-
-// ✅ STK Push
-app.post("/api/mpesa/stkpush", async (req, res) => {
+// ✅ Create new listing
+app.post("/api/listings", async (req, res) => {
   try {
-    const { phone, amount, listingId } = req.body;
-    const token = await getAccessToken();
-
-    const timestamp = new Date()
-      .toISOString()
-      .replace(/[-T:.Z]/g, "")
-      .slice(0, 14);
-
-    const password = Buffer.from(
-      `${process.env.MPESA_SHORTCODE}${process.env.MPESA_PASSKEY}${timestamp}`
-    ).toString("base64");
-
-    await axios.post(
-      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
-      {
-        BusinessShortCode: process.env.MPESA_SHORTCODE,
-        Password: password,
-        Timestamp: timestamp,
-        TransactionType: "CustomerPayBillOnline",
-        Amount: amount,
-        PartyA: phone,
-        PartyB: process.env.MPESA_SHORTCODE,
-        PhoneNumber: phone,
-        CallBackURL: `${process.env.SERVER_URL}/api/mpesa/callback`,
-        AccountReference: listingId,
-        TransactionDesc: "Payment for booking",
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    res.json({ success: true, message: "STK Push sent" });
+    const newListing = new Listing(req.body);
+    await newListing.save();
+    res.status(201).json(newListing);
   } catch (err) {
-    console.error(err.response?.data || err.message);
-    res.status(500).json({ error: "STK push failed" });
+    res.status(500).json({ error: "Failed to create listing" });
   }
 });
 
-// ✅ M-Pesa Callback
-app.post("/api/mpesa/callback", async (req, res) => {
-  console.log("M-Pesa Callback:", req.body);
-
+// ✅ Update listing
+app.put("/api/listings/:id", async (req, res) => {
   try {
-    const body = req.body.Body.stkCallback;
-
-    if (body.ResultCode === 0) {
-      const listingId = body.CallbackMetadata.Item.find(
-        (i) => i.Name === "AccountReference"
-      )?.Value;
-
-      if (listingId) {
-        await Listing.findByIdAndUpdate(listingId, { booked: true });
-        console.log("Booking marked as paid:", listingId);
-      }
-    }
+    const updated = await Listing.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.json(updated);
   } catch (err) {
-    console.error("Callback error:", err.message);
+    res.status(500).json({ error: "Failed to update listing" });
   }
+});
 
-  res.json({ ok: true });
+// ✅ Delete listing
+app.delete("/api/listings/:id", async (req, res) => {
+  try {
+    await Listing.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete listing" });
+  }
+});
+
+// ✅ Book a listing (no M-Pesa, just toggle booked)
+app.post("/api/listings/:id/book", async (req, res) => {
+  try {
+    const updated = await Listing.findByIdAndUpdate(
+      req.params.id,
+      { booked: true },
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to book listing" });
+  }
 });
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
