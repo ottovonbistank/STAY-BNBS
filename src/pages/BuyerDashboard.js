@@ -1,4 +1,3 @@
-// BuyerDashboard.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +28,7 @@ const BuyerDashboard = () => {
   const handleBookListing = async (id) => {
     if (!window.confirm("Are you sure you want to book this listing?")) return;
     try {
-      await axios.post(`${API_URL}/api/book/${id}`, { nights: 3 });
+      await axios.post(`${API_URL}/api/listings/${id}/book`);
       fetchListings();
       closeModal();
     } catch (error) {
@@ -40,14 +39,13 @@ const BuyerDashboard = () => {
   const handleUnbookListing = async (id) => {
     if (!window.confirm("Are you sure you want to unbook this listing?")) return;
     try {
-      await axios.post(`${API_URL}/api/unbook/${id}`);
+      await axios.post(`${API_URL}/api/listings/${id}/unbook`);
       fetchListings();
     } catch (error) {
       console.error("Error unbooking listing:", error);
     }
   };
 
-  // ✅ redirect to payment page
   const handleProceedToPayment = (listing) => {
     navigate(`/payment/${listing._id}`, { state: { listing } });
   };
@@ -63,32 +61,34 @@ const BuyerDashboard = () => {
   };
 
   return (
-    <div className="dashboard">
-      <div className="all-listings">
-        <h3>All Listings</h3>
-        {listings.length === 0 ? (
-          <p>No listings at the moment.</p>
-        ) : (
-          <div className="listings">
-            {listings.map((listing) => (
-              <div
-                className="listing-card"
-                key={listing._id}
-                onClick={() => openModal(listing)}
-              >
-                {listing.imageUrl && (
-                  <img
-                    src={`${API_URL}${listing.imageUrl}`}
-                    alt={listing.title}
-                  />
-                )}
-                <h3>{listing.title}</h3>
-                <p>{listing.location}</p>
-                <p>{listing.price} </p>
-              </div>
-            ))}
-          </div>
-        )}
+    <div className="page-container">
+      <div className="dashboard">
+        <div className="all-listings">
+          <h3>All Listings</h3>
+          {listings.length === 0 ? (
+            <p>No listings at the moment.</p>
+          ) : (
+            <div className="buyer-listings">
+              {listings.map((listing) => (
+                <div
+                  className="buyer-listing-card"
+                  key={listing._id}
+                  onClick={() => openModal(listing)}
+                >
+                  {listing.imageUrl && (
+                    <img
+                      src={`${API_URL}${listing.imageUrl}`}
+                      alt={listing.title}
+                    />
+                  )}
+                  <h3>{listing.title}</h3>
+                  <p>{listing.location}</p>
+                  <p>{listing.price}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <hr />
@@ -98,11 +98,11 @@ const BuyerDashboard = () => {
         {listings.filter((l) => l.booked).length === 0 ? (
           <p>You have not booked any listings yet.</p>
         ) : (
-          <div className="listings">
+          <div className="buyer-listings">
             {listings
               .filter((l) => l.booked)
               .map((listing) => (
-                <div className="listing-card" key={listing._id}>
+                <div className="buyer-listing-card" key={listing._id}>
                   {listing.imageUrl && (
                     <img
                       src={`${API_URL}${listing.imageUrl}`}
@@ -111,14 +111,13 @@ const BuyerDashboard = () => {
                   )}
                   <h3>{listing.title}</h3>
                   <p>{listing.location}</p>
-                  <p>{listing.price} KES</p>
+                  <p>{listing.price}</p>
                   <p className="booked-status">Booked</p>
 
                   <button onClick={() => handleUnbookListing(listing._id)}>
                     Unbook
                   </button>
 
-                  {/* ✅ Goes to payment page */}
                   <button
                     className="payment-btn"
                     onClick={() => handleProceedToPayment(listing)}
@@ -131,7 +130,6 @@ const BuyerDashboard = () => {
         )}
       </div>
 
-      {/* DETAILS MODAL */}
       {showModal && selectedListing && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -142,7 +140,7 @@ const BuyerDashboard = () => {
             />
             <h3>{selectedListing.title}</h3>
             <p>{selectedListing.location}</p>
-            <p>{selectedListing.price} KES</p>
+            <p>{selectedListing.price}</p>
             <div className="modal-description">
               <p>{selectedListing.description}</p>
             </div>

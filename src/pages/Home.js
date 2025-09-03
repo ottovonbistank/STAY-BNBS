@@ -1,6 +1,9 @@
+// Home.js
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
+// ✅ You no longer need to import App.css in this specific component
 
 const Home = () => {
   const navigate = useNavigate();

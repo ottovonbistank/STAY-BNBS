@@ -5,11 +5,10 @@ const listingSchema = new mongoose.Schema({
   location: String,
   price: String,
   description: String,
-  contact: String,                       // ✅ <-- new field
+  contact: String,
   booked: { type: Boolean, default: false },
   bookingDetails: { nights: Number },
-  image: String,         // filename
-  imageUrl: String,      // full path for frontend
+  imageUrl: String,  // ✅ single image field (used by frontend)
   seller: { type: String }
 });
 

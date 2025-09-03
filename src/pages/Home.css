@@ -1,6 +1,9 @@
+/* Home.css */
+
 .home-container {
-  height: 100vh;
-  background: url("/public/homebackground.jpeg") no-repeat center center/cover; /* Replace with your image path */
+  /* This is the key. It sets the container to the full viewport height. */
+  height: 100vh; 
+  background: url("/public/homebackground.jpeg") no-repeat center center/cover;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -8,7 +11,7 @@
 
 .home-content {
   text-align: center;
-  background: rgba(131, 131, 131, 0.5); /* dark overlay for text visibility */
+  background: rgba(131, 131, 131, 0.5); 
   padding: 40px;
   border-radius: 12px;
   color: white;

@@ -1,35 +1,49 @@
+// server.js
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import Listing from "./models/Listing.js";
+import multer from "multer";
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Fix __dirname in ES Modules
+// Fix __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Middleware
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
-// ✅ Serve static uploads folder
+// Serve static uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ MongoDB connect
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+const upload = multer({ storage: storage });
+
+// MongoDB connect
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
+  .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error(err));
 
-// ✅ Get all listings
+// ---------------- ROUTES ----------------
+
+// Get all listings
 app.get("/api/listings", async (req, res) => {
   try {
     const listings = await Listing.find();
@@ -39,7 +53,7 @@ app.get("/api/listings", async (req, res) => {
   }
 });
 
-// ✅ Get single listing
+// Get single listing
 app.get("/api/listings/:id", async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
@@ -50,30 +64,52 @@ app.get("/api/listings/:id", async (req, res) => {
   }
 });
 
-// ✅ Create new listing
-app.post("/api/listings", async (req, res) => {
+// Create new listing
+app.post("/api/listings", upload.single("image"), async (req, res) => {
   try {
-    const newListing = new Listing(req.body);
+    const { title, location, price, description, contact } = req.body;
+
+    const newListing = new Listing({
+      title,
+      location,
+      price,
+      description,
+      contact,
+      booked: false,
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : "",
+    });
+
     await newListing.save();
     res.status(201).json(newListing);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Failed to create listing" });
   }
 });
 
-// ✅ Update listing
-app.put("/api/listings/:id", async (req, res) => {
+// Update listing
+app.put("/api/listings/:id", upload.single("image"), async (req, res) => {
   try {
-    const updated = await Listing.findByIdAndUpdate(req.params.id, req.body, {
+    const { title, location, price, description, contact } = req.body;
+
+    let updateData = { title, location, price, description, contact };
+
+    if (req.file) {
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    const updated = await Listing.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
     });
+
     res.json(updated);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Failed to update listing" });
   }
 });
 
-// ✅ Delete listing
+// Delete listing
 app.delete("/api/listings/:id", async (req, res) => {
   try {
     await Listing.findByIdAndDelete(req.params.id);
@@ -83,7 +119,7 @@ app.delete("/api/listings/:id", async (req, res) => {
   }
 });
 
-// ✅ Book a listing (no M-Pesa, just toggle booked)
+// Book a listing
 app.post("/api/listings/:id/book", async (req, res) => {
   try {
     const updated = await Listing.findByIdAndUpdate(
@@ -97,6 +133,21 @@ app.post("/api/listings/:id/book", async (req, res) => {
   }
 });
 
+// Unbook a listing
+app.post("/api/listings/:id/unbook", async (req, res) => {
+  try {
+    const updated = await Listing.findByIdAndUpdate(
+      req.params.id,
+      { booked: false },
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to unbook listing" });
+  }
+});
+
+// ---------------- START SERVER ----------------
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 
 mongoose.connection.once("open", () => {

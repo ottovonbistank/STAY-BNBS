@@ -42,14 +42,17 @@ const SellerDashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value) form.append(key, value);
-    });
-
+    form.append("title", formData.title);
+    form.append("location", formData.location);
+    form.append("price", formData.price);
+    form.append("description", formData.description);
+    form.append("contact", formData.contact);
+    if (formData.image) {
+      form.append("image", formData.image, formData.image.name);
+    }
+    
     try {
-      await axios.post(`${API_URL}/api/listings`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.post(`${API_URL}/api/listings`, form);
       fetchListings();
       setFormData({
         title: "",
@@ -96,14 +99,17 @@ const SellerDashboard = () => {
   const handleUpdate = async () => {
     if (!editingListing) return;
     const form = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value) form.append(key, value);
-    });
+    form.append("title", formData.title);
+    form.append("location", formData.location);
+    form.append("price", formData.price);
+    form.append("description", formData.description);
+    form.append("contact", formData.contact);
+    if (formData.image) {
+      form.append("image", formData.image, formData.image.name);
+    }
 
     try {
-      await axios.put(`${API_URL}/api/listings/${editingListing._id}`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.put(`${API_URL}/api/listings/${editingListing._id}`, form);
       fetchListings();
       closeEditModal();
     } catch (error) {

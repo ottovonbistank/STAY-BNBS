@@ -1,170 +1,258 @@
-.dashboard {
+/* === Shared Page Layout === */
+.page-container {
   padding: 20px;
-  font-family: Arial, sans-serif;
   background: #f8f9fa;
   min-height: 100vh;
-}
-
-.dashboard h2 {
-  text-align: center;
-  margin-bottom: 20px;
+  font-family: Arial, sans-serif;
   color: #333;
 }
 
-form {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+.page-container h2,
+.page-container h3 {
+  text-align: center;
   margin-bottom: 20px;
+  color: #222;
 }
 
-form input,
-form textarea,
-form button {
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-}
-
-form button {
-  background: #007bff;
-  color: white;
-  cursor: pointer;
-  border: none;
-  font-weight: bold;
-}
-
-form button:hover {
-  background: #0056b3;
-}
-
+/* ============================
+   === Buyer & Seller Listings ===
+   ============================ */
+.buyer-listings,
 .listings {
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin: 20px 0;
 }
 
+/* Card base */
+.buyer-listing-card,
 .listing-card {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.buyer-listing-card:hover,
+.listing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.buyer-listing-card img,
 .listing-card img {
   width: 100%;
-  height: 200px;
+  height: 180px;
   object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
+.buyer-listing-card h3,
 .listing-card h3 {
-  margin: 10px;
-  color: #333;
+  font-size: 1.2rem;
+  margin: 8px 0;
 }
 
+.buyer-listing-card p,
 .listing-card p {
-  margin: 0 10px 10px;
+  margin: 4px 0;
   color: #555;
 }
 
-.listing-card button {
-  margin: 10px;
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
+/* Status badges */
+.status {
+  font-weight: bold;
+  margin-top: 8px;
 }
 
-.listing-card button:first-of-type {
-  background: #28a745;
+.status.available {
+  color: green;
+}
+
+.status.booked {
+  color: red;
+}
+
+/* Booked label (buyer) */
+.booked-status {
+  color: green;
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+/* ============================
+   === Forms ===
+   ============================ */
+.listing-form {
+  max-width: 600px;
+  margin: 0 auto 30px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.listing-form input,
+.listing-form textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.listing-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.listing-form button {
+  align-self: flex-start;
+}
+
+/* ============================
+   === Buttons ===
+   ============================ */
+button {
+  background: #007bff;
   color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 6px 4px 0 0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+/* Special button (Payment) */
+.payment-btn {
+  background: #28a745;
+}
+
+.payment-btn:hover {
+  background: #1e7e34;
+}
+
+/* Delete & Edit buttons */
+.listing-card button:first-of-type {
+  background: #dc3545;
 }
 
 .listing-card button:first-of-type:hover {
-  background: #218838;
+  background: #b02a37;
 }
 
 .listing-card button:last-of-type {
-  background: #dc3545;
-  color: white;
+  background: #ffc107;
+  color: #333;
 }
 
 .listing-card button:last-of-type:hover {
-  background: #c82333;
-}
-.status-tag {
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  background: #e0a800;
 }
 
-.status-tag.booked {
-  background-color: #e74c3c;
-}
-
-.status-tag.available {
-  background-color: #2ecc71;
-}
-/* ----- Modal styles for BuyerDashboard ----- */
-
+/* ============================
+   === Modals ===
+   ============================ */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.95);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  padding: 15px;
-  box-sizing: border-box;
+  z-index: 999;
 }
 
 .modal-content {
-  background: #222;
+  background: #fff;
+  border-radius: 12px;
   padding: 20px;
-  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
   text-align: center;
-  max-width: 480px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content h3 {
+  margin-bottom: 15px;
+}
+
+.modal-content input,
+.modal-content textarea {
   width: 100%;
-  max-height: 80vh;
-  overflow-y: auto;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
 .modal-image {
   width: 100%;
-  max-height: 300px;
+  height: 220px;
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 15px;
 }
 
 .modal-description {
-  margin-top: 10px;
+  margin: 12px 0;
   text-align: left;
-  color: #ddd;
+  color: #444;
 }
 
+/* Close button */
 .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
   background: transparent;
   border: none;
   font-size: 1.8rem;
-  color: white;
-  position: absolute;
-  top: 10px;
-  right: 15px;
   cursor: pointer;
+  color: #888;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .buyer-listings,
+  .listings {
+    grid-template-columns: 1fr;
+  }
 }
