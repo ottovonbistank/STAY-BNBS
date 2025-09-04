@@ -146,7 +146,10 @@ app.post("/api/listings/:id/unbook", async (req, res) => {
 });
 
 // ---------------- START SERVER ----------------
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+app.listen(PORT, () =>
+  console.log(`🚀 Server running at ${hostName}:${PORT}`)
+);
 
 mongoose.connection.once("open", () => {
   console.log("✅ Connected to DB:", mongoose.connection.name);
