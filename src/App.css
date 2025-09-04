@@ -1,20 +1,20 @@
-/* App.css */
-
 /* === CSS Reset: Consistent styling across all browsers === */
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #f9f9f9;
+ 
   font-family: Arial, sans-serif;
-  overflow-x: hidden; /* Prevents horizontal scrollbars from appearing */
+  overflow-x: hidden;
 }
 
 /* === App Layout and Core Styles === */
@@ -26,9 +26,7 @@ html, body, #root {
 .page-container {
   min-height: 100vh;
   width: 100%;
-  background: #f9f9f9; 
   margin: 0 auto;
-  padding: 20px; 
 }
 
 /* === Hamburger Button: For mobile navigation === */
@@ -42,66 +40,4 @@ html, body, #root {
   cursor: pointer;
   z-index: 1000;
   color: #333;
-}
-
-/* === Component-specific Styles (moved from Home.css) === */
-.home-container {
-  height: 100vh; 
-  background: url("/public/homebackground.jpeg") no-repeat center center/cover;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.home-content {
-  text-align: center;
-  background: rgba(131, 131, 131, 0.5); 
-  padding: 40px;
-  border-radius: 12px;
-  color: white;
-}
-
-.home-content h1 {
-  font-size: 3rem;
-  margin-bottom: 10px;
-}
-
-.home-content p {
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-}
-
-.button-group {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-}
-
-.home-btn {
-  padding: 12px 24px;
-  font-size: 1.2rem;
-  border: none;
-  outline: none; /* Removes the border that appears on focus/click */
-  border-radius: 8px;
-  cursor: pointer;
-  background: #ffb400;
-  color: black;
-  font-weight: bold;
-  transition: background 0.3s ease;
-}
-
-.home-btn:hover {
-  background: #ff3c00;
-}
-
-.home-btn:focus {
-  box-shadow: 0 0 0 3px rgba(255, 180, 0, 0.5); /* Adds an accessible focus ring */
-}
-
-.home-btn.give {
-  background: #4c6faf;
-}
-
-.home-btn.give:hover {
-  background: #ff3c00;
 }
