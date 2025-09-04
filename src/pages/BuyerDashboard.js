@@ -3,7 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// 🔑 Use Render backend in production
+const API_URL =
+  process.env.REACT_APP_API_URL || "https://stay-bnbs-1.onrender.com";
 
 const BuyerDashboard = () => {
   const [listings, setListings] = useState([]);
@@ -77,7 +79,11 @@ const BuyerDashboard = () => {
                 >
                   {listing.imageUrl && (
                     <img
-                      src={`${API_URL}${listing.imageUrl}`}
+                      src={
+                        listing.imageUrl.startsWith("http")
+                          ? listing.imageUrl
+                          : `${API_URL}${listing.imageUrl}`
+                      }
                       alt={listing.title}
                     />
                   )}
@@ -105,7 +111,11 @@ const BuyerDashboard = () => {
                 <div className="buyer-listing-card" key={listing._id}>
                   {listing.imageUrl && (
                     <img
-                      src={`${API_URL}${listing.imageUrl}`}
+                      src={
+                        listing.imageUrl.startsWith("http")
+                          ? listing.imageUrl
+                          : `${API_URL}${listing.imageUrl}`
+                      }
                       alt={listing.title}
                     />
                   )}
@@ -135,7 +145,11 @@ const BuyerDashboard = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <img
               className="modal-image"
-              src={`${API_URL}${selectedListing.imageUrl}`}
+              src={
+                selectedListing.imageUrl.startsWith("http")
+                  ? selectedListing.imageUrl
+                  : `${API_URL}${selectedListing.imageUrl}`
+              }
               alt={selectedListing.title}
             />
             <h3>{selectedListing.title}</h3>
