@@ -91,20 +91,14 @@ app.post("/api/listings", upload.single("image"), async (req, res) => {
 app.put("/api/listings/:id", upload.single("image"), async (req, res) => {
   try {
     const { title, location, price, description, contact } = req.body;
-
     let updateData = { title, location, price, description, contact };
-
-    if (req.file) {
-      updateData.imageUrl = `/uploads/${req.file.filename}`;
-    }
+    if (req.file) updateData.imageUrl = `/uploads/${req.file.filename}`;
 
     const updated = await Listing.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
     });
-
     res.json(updated);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Failed to update listing" });
   }
 });
@@ -119,7 +113,7 @@ app.delete("/api/listings/:id", async (req, res) => {
   }
 });
 
-// Book a listing
+// Book / Unbook
 app.post("/api/listings/:id/book", async (req, res) => {
   try {
     const updated = await Listing.findByIdAndUpdate(
@@ -133,7 +127,6 @@ app.post("/api/listings/:id/book", async (req, res) => {
   }
 });
 
-// Unbook a listing
 app.post("/api/listings/:id/unbook", async (req, res) => {
   try {
     const updated = await Listing.findByIdAndUpdate(

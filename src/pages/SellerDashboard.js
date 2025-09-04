@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Dashboard.css";
 
-// 🔑 Use Render in production
-const API_URL =
-  process.env.REACT_APP_API_URL || "https://stay-bnbs-1.onrender.com";
+const API_URL = process.env.REACT_APP_API_URL || "https://stay-bnbs-1.onrender.com";
 
-const SellerDashboard = ({ sellerId }) => {
+
+const SellerDashboard = () => {
   const [listings, setListings] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -21,15 +20,12 @@ const SellerDashboard = ({ sellerId }) => {
   const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
-    if (sellerId) fetchListings();
-  }, [sellerId]);
+    fetchListings();
+  }, []);
 
-  // ✅ Fetch only this seller’s listings
   const fetchListings = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/listings/mine`, {
-        params: { sellerId },
-      });
+      const res = await axios.get(`${API_URL}/api/listings`);
       setListings(res.data);
     } catch (error) {
       console.error("Error fetching listings:", error);
@@ -52,11 +48,10 @@ const SellerDashboard = ({ sellerId }) => {
     form.append("price", formData.price);
     form.append("description", formData.description);
     form.append("contact", formData.contact);
-    form.append("sellerId", sellerId); // 🔑 attach seller
     if (formData.image) {
       form.append("image", formData.image, formData.image.name);
     }
-
+    
     try {
       await axios.post(`${API_URL}/api/listings`, form);
       fetchListings();
@@ -110,7 +105,6 @@ const SellerDashboard = ({ sellerId }) => {
     form.append("price", formData.price);
     form.append("description", formData.description);
     form.append("contact", formData.contact);
-    form.append("sellerId", sellerId); // 🔑 keep seller info
     if (formData.image) {
       form.append("image", formData.image, formData.image.name);
     }
@@ -143,16 +137,7 @@ const SellerDashboard = ({ sellerId }) => {
       <div className="listings">
         {listings.map((listing) => (
           <div className="listing-card" key={listing._id}>
-            {listing.imageUrl && (
-              <img
-                src={
-                  listing.imageUrl.startsWith("http")
-                    ? listing.imageUrl
-                    : `${API_URL}${listing.imageUrl}`
-                }
-                alt={listing.title}
-              />
-            )}
+            {listing.imageUrl && <img src={`${API_URL}${listing.imageUrl}`} alt={listing.title} />}
             <h3>{listing.title}</h3>
             <p>{listing.location}</p>
             <p>{listing.price}</p>
