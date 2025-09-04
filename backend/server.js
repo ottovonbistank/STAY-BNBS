@@ -11,6 +11,7 @@ import multer from "multer";
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
+const hostName = process.env.HOST_NAME || "http://localhost";
 
 // Fix __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -44,6 +45,10 @@ mongoose
 // ---------------- ROUTES ----------------
 
 // Get all listings
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
+
 app.get("/api/listings", async (req, res) => {
   try {
     const listings = await Listing.find();
