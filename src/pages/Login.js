@@ -27,49 +27,69 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-6 rounded-2xl shadow-md w-80"
-      >
-        <h2 className="text-xl font-bold mb-4 text-center">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100">
+      <div className="relative w-full max-w-md p-8 bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
+        
+        {/* Decorative circle in background */}
+        <div className="absolute -top-24 -right-24 w-60 h-60 bg-purple-300 rounded-full opacity-30 blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-pink-300 rounded-full opacity-30 blur-3xl animate-pulse"></div>
 
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+        <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-900">Login</h2>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full border p-2 rounded mb-3"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        {error && (
+          <p className="text-red-600 text-sm mb-4 text-center font-medium">
+            {error}
+          </p>
+        )}
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full border p-2 rounded mb-3"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <form onSubmit={handleLogin} className="space-y-5">
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              className="w-full p-3 rounded-xl border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
-          disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              className="w-full p-3 rounded-xl border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-        {/* ✅ Added signup link */}
-        <p className="text-sm text-center mt-4">
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-3 rounded-xl font-semibold shadow-lg hover:scale-105 hover:shadow-2xl transition transform"
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="text-gray-600 text-center mt-6 text-sm">
           Don’t have an account?{" "}
-          <Link to="/signup" className="text-blue-500 hover:underline">
+          <Link
+            to="/signup"
+            className="text-indigo-600 font-semibold hover:underline"
+          >
             Sign up here
           </Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 };

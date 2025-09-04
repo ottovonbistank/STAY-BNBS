@@ -27,46 +27,64 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 to-purple-300">
       <form
         onSubmit={handleSignup}
-        className="bg-white p-6 rounded-2xl shadow-md w-80"
+        className="bg-white p-8 md:p-10 rounded-3xl shadow-xl w-full max-w-md border border-gray-200"
       >
-        <h2 className="text-xl font-bold mb-4 text-center">Sign Up</h2>
+        <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-800">
+          Create Account
+        </h2>
 
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+        {error && (
+          <p className="text-red-600 text-sm mb-4 text-center font-medium">
+            {error}
+          </p>
+        )}
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full border p-2 rounded mb-3"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <div className="mb-4">
+          <label className="block text-gray-700 font-semibold mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            placeholder="you@example.com"
+            className="w-full border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-        <input
-          type="password"
-          placeholder="Password (min 6 characters)"
-          className="w-full border p-2 rounded mb-3"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="mb-6">
+          <label className="block text-gray-700 font-semibold mb-2">
+            Password
+          </label>
+          <input
+            type="password"
+            placeholder="At least 6 characters"
+            className="w-full border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 rounded-xl font-semibold shadow-lg hover:scale-105 hover:shadow-2xl transition transform"
           disabled={loading}
         >
-          {loading ? "Signing up..." : "Sign Up"}
+          {loading ? "Creating Account..." : "Sign Up"}
         </button>
 
-        {/* ✅ Added login link */}
-        <p className="text-sm text-center mt-4">
+        <p className="text-gray-600 text-center mt-6 text-sm">
           Already have an account?{" "}
-          <Link to="/login" className="text-green-500 hover:underline">
-            Login here
+          <Link
+            to="/login"
+            className="text-blue-600 font-semibold hover:underline"
+          >
+            Login
           </Link>
         </p>
       </form>

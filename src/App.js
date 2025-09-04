@@ -10,6 +10,8 @@ import Navbar from "./components/Navbar";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 
+export const API_URL = "https://api-bookbnb-1.onrender.com" ;
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);

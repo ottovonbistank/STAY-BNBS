@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
+import { API_URL } from "../App";
 
-const API_URL = process.env.REACT_APP_API_URL || "https://stay-bnbs-1.onrender.com";
+// const API_URL = "https://api-bookbnb.onrender.com" || "http://localhost:5000";
 
 const BuyerDashboard = () => {
   const [listings, setListings] = useState([]);

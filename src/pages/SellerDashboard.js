@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Dashboard.css";
-
-const API_URL = process.env.REACT_APP_API_URL || "https://stay-bnbs-1.onrender.com";
-
+import { API_URL } from "../App";
+// const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const SellerDashboard = () => {
   const [listings, setListings] = useState([]);
